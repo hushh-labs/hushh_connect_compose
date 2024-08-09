@@ -7,6 +7,13 @@ data class ProductData(
     val productPrice: String
 )
 
+data class ExperienceData(
+    val duration: String,
+    val company: String,
+    val location: String,
+    val description: String
+)
+
 data class ImageData(
     val imageRes: Int,
     val name: String,
@@ -16,12 +23,11 @@ data class ImageData(
     val description: String,
     val fullDescription: String,
     val experience: List<ExperienceData> = emptyList(),
-    val products: List<ProductData> = emptyList()
-)
-
-data class ExperienceData(
-    val duration: String,
-    val company: String,
-    val location: String,
-    val description: String
+    val products: List<ProductData> = emptyList(),
+    val profileName: String = "", // New fields for profile information
+    val profileLinkedInUrl: String = "",
+    val profileYouTubeUrl: String = "",
+    val profileFacebookUrl: String = "",
+    val profileXUrl: String = "",
+    val profileInstagramUrl: String = ""
 )

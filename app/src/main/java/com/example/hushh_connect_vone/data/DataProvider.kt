@@ -100,7 +100,23 @@ object DataProvider {
                             ProductData(R.drawable.product4, "Lamerei", "Reversible Angora Cardigan", "$120")
                         )
                     ),
-                    ImageData(R.drawable.profoile_two_female, "Hobbies: Photography, Travel", "", "", "", "", "", emptyList())
+                    ImageData(
+                        R.drawable.profoile_two_female,
+                        "Priya",
+                        "Content Writer",
+                        "Content Hub",
+                        "Boston",
+                        "Content Writer with experience in creating engaging content for various platforms.",
+                        "Creating engaging content for various platforms, focusing on SEO and audience engagement. Previously provided content writing services for blogs, websites, and marketing campaigns, enhancing online presence.",
+                        experience = emptyList(),
+                        profileName = "Priya",
+                        profileLinkedInUrl = "https://www.linkedin.com/in/sonal-profile", // Replace with actual URL
+                        profileYouTubeUrl = "https://www.youtube.com/user/sonalchannel", // Replace with actual URL
+                        profileFacebookUrl = "https://www.facebook.com/sonal.profile", // Replace with actual URL
+                        profileXUrl = "https://twitter.com/sonal_profile", // Replace with actual URL
+                        profileInstagramUrl = "https://www.instagram.com/sonal.profile/" // Replace with actual URL
+                    )
+
                 )
             ),
             CardData(
@@ -188,7 +204,22 @@ object DataProvider {
                             ProductData(R.drawable.product4, "Lamerei", "Reversible Angora Cardigan", "$120")
                         )
                     ),
-                    ImageData(R.drawable.profile_one_male, "Hobbies: Cooking, Gaming", "", "", "", "", "", emptyList())
+                    ImageData(
+                        R.drawable.profile_one_male,
+                        "Rohan",
+                        "Content Writer",
+                        "Content Hub",
+                        "Boston",
+                        "Content Writer with experience in creating engaging content for various platforms.",
+                        "Creating engaging content for various platforms, focusing on SEO and audience engagement. Previously provided content writing services for blogs, websites, and marketing campaigns, enhancing online presence.",
+                        experience = emptyList(),
+                        profileName = "Rohan",
+                        profileLinkedInUrl = "https://www.linkedin.com/in/sonal-profile", // Replace with actual URL
+                        profileYouTubeUrl = "https://www.youtube.com/user/sonalchannel", // Replace with actual URL
+                        profileFacebookUrl = "https://www.facebook.com/sonal.profile", // Replace with actual URL
+                        profileXUrl = "https://twitter.com/sonal_profile", // Replace with actual URL
+                        profileInstagramUrl = "https://www.instagram.com/sonal.profile/" // Replace with actual URL
+                    )
                 )
             ),
             CardData(

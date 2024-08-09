@@ -37,6 +37,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -295,6 +296,7 @@ fun DraggableCard(
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 val currentImageData = imagesList[imageIndices[currentCardIndex.value]]
+                val isFifthImage = (imageIndices[currentCardIndex.value] == 4)
                 val backgroundImageRes = if (imageIndices[currentCardIndex.value] == 3) {
                     R.drawable.discoverpage_imagefour_bg
                 } else {
@@ -307,6 +309,110 @@ fun DraggableCard(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
+
+                if (isFifthImage) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        // Background image
+                        Image(
+                            painter = painterResource(id = currentImageData.imageRes),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+
+                        // Dark overlay
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color(0x88000000)) // Semi-transparent black overlay
+                        )
+
+                        // Text and Social Media Icons
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center) // Aligns the column to the center of the card
+                                .padding(bottom = 20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            // "Connect with" text in white
+                            Text(
+                                text = "Connect with",
+                                style = TextStyle(
+                                    fontSize = 27.sp,
+                                    lineHeight = 33.sp,
+                                    fontFamily = FontFamily(Font(R.font.pacifico)),
+                                    fontWeight = FontWeight(400),
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center,
+                                    letterSpacing = 0.1.sp
+                                )
+                            )
+
+                            // Name with simulated gradient color using a combination of colors
+                            Text(
+                                text = currentImageData.name + "!",
+                                style = TextStyle(
+                                    fontSize = 42.sp, // Increased font size for name
+                                    lineHeight = 44.sp,
+                                    fontFamily = FontFamily(Font(R.font.pacifico)),
+                                    fontWeight = FontWeight(400),
+                                    textAlign = TextAlign.Center,
+                                    letterSpacing = 0.1.sp,
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(Color(0xFFE54D60), Color(0xFFA342FF))
+                                    )
+                                )
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Social Media Icons
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.linkedin_social), // Replace with your icon resource ID
+                                    contentDescription = "LinkedIn",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(
+                                    painter = painterResource(id = R.drawable.yt_social), // Replace with your icon resource ID
+                                    contentDescription = "YouTube",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(
+                                    painter = painterResource(id = R.drawable.fb_social), // Replace with your icon resource ID
+                                    contentDescription = "Facebook",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(
+                                    painter = painterResource(id = R.drawable.x_social), // Replace with your icon resource ID
+                                    contentDescription = "Twitter",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(
+                                    painter = painterResource(id = R.drawable.insta_social), // Replace with your icon resource ID
+                                    contentDescription = "Instagram",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            }
+                        }
+
+                    }
+                }
+
+
 
                 // Blackish overlay to darken the bottom 50% of the image
                 Box(
@@ -605,7 +711,7 @@ fun DraggableCard(
                             else -> {
                                 // For other images, you can customize the content as needed
                                 Text(
-                                    text = "Additional details not available.",
+                                    text = " ",
                                     color = Color.White,
                                     fontSize = 14.sp
                                 )
