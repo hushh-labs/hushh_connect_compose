@@ -24,10 +24,12 @@ data class ImageData(
     val fullDescription: String,
     val experience: List<ExperienceData> = emptyList(),
     val products: List<ProductData> = emptyList(),
-    val profileName: String = "", // New fields for profile information
+    val profileName: String = "",
     val profileLinkedInUrl: String = "",
     val profileYouTubeUrl: String = "",
     val profileFacebookUrl: String = "",
     val profileXUrl: String = "",
-    val profileInstagramUrl: String = ""
+    val profileInstagramUrl: String = "",
+    val contactNumber: String = "" // New field for contact number
 )
+

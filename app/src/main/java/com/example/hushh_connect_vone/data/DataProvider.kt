@@ -2,7 +2,6 @@ package com.example.hushh_connect_vone.data
 
 import com.example.hushh_connect_vone.R
 
-
 object DataProvider {
     fun getCards(): List<CardData> {
         return listOf(
@@ -38,7 +37,8 @@ object DataProvider {
                                 "Delhi, India",
                                 "Graduated with a degree in design, solidifying my foundation in design thinking and user-centric solutions."
                             )
-                        )
+                        ),
+                        contactNumber = "8004482372"
                     ),
                     ImageData(
                         R.drawable.profile_female,
@@ -51,7 +51,8 @@ object DataProvider {
                                 "DTU '22 graduate with a strong foundation in design thinking.\n\n" +
                                 "Previously crafted seamless interfaces at PhonePe, enhancing user experiences for one of India's top digital payment platforms.\n\n" +
                                 "Committed to innovation, I create functional and user-centric designs that push boundaries.",
-                        experience = emptyList()
+                        experience = emptyList(),
+                        contactNumber = "9064801614"
                     ),
                     ImageData(
                         R.drawable.profile_mix,
@@ -83,7 +84,8 @@ object DataProvider {
                                 "Delhi, India",
                                 "Graduated with a degree in design, solidifying my foundation in design thinking and user-centric solutions."
                             )
-                        )
+                        ),
+                        contactNumber = "9897027801"
                     ),
                     ImageData(
                         R.drawable.profile_mix,
@@ -98,7 +100,8 @@ object DataProvider {
                             ProductData(R.drawable.product2, "Lamerei", "Reversible Angora Cardigan", "$120"),
                             ProductData(R.drawable.product3, "21WN", "Reversible Angora Cardigan", "$120"),
                             ProductData(R.drawable.product4, "Lamerei", "Reversible Angora Cardigan", "$120")
-                        )
+                        ),
+                        contactNumber = "8004482372"
                     ),
                     ImageData(
                         R.drawable.profoile_two_female,
@@ -110,13 +113,13 @@ object DataProvider {
                         "Creating engaging content for various platforms, focusing on SEO and audience engagement. Previously provided content writing services for blogs, websites, and marketing campaigns, enhancing online presence.",
                         experience = emptyList(),
                         profileName = "Priya",
-                        profileLinkedInUrl = "https://www.linkedin.com/in/sonal-profile", // Replace with actual URL
-                        profileYouTubeUrl = "https://www.youtube.com/user/sonalchannel", // Replace with actual URL
-                        profileFacebookUrl = "https://www.facebook.com/sonal.profile", // Replace with actual URL
-                        profileXUrl = "https://twitter.com/sonal_profile", // Replace with actual URL
-                        profileInstagramUrl = "https://www.instagram.com/sonal.profile/" // Replace with actual URL
+                        profileLinkedInUrl = "https://www.linkedin.com/in/sonal-profile",
+                        profileYouTubeUrl = "https://www.youtube.com/user/sonalchannel",
+                        profileFacebookUrl = "https://www.facebook.com/sonal.profile",
+                        profileXUrl = "https://twitter.com/sonal_profile",
+                        profileInstagramUrl = "https://www.instagram.com/sonal.profile/",
+                        contactNumber = "8004482372"
                     )
-
                 )
             ),
             CardData(
@@ -148,7 +151,8 @@ object DataProvider {
                                 "Mountain View, CA",
                                 "Worked on enhancing search algorithms and improving ad targeting systems."
                             )
-                        )
+                        ),
+                        contactNumber = "8004482372"
                     ),
                     ImageData(
                         R.drawable.profile_two_male,
@@ -158,7 +162,8 @@ object DataProvider {
                         "San Francisco",
                         "Data Scientist with experience in developing machine learning models and data-driven solutions.",
                         "Experienced in leading data-driven projects and implementing machine learning models to optimize business solutions. Previously worked at Disney+ and Google, enhancing search algorithms and improving ad targeting systems.",
-                        experience = emptyList()
+                        experience = emptyList(),
+                        contactNumber = "9064801614"
                     ),
                     ImageData(
                         R.drawable.profile_one_male,
@@ -187,7 +192,8 @@ object DataProvider {
                                 "Mountain View, CA",
                                 "Worked on enhancing search algorithms and improving ad targeting systems."
                             )
-                        )
+                        ),
+                        contactNumber = "9897027801"
                     ),
                     ImageData(
                         R.drawable.profile_mix,
@@ -202,7 +208,8 @@ object DataProvider {
                             ProductData(R.drawable.product2, "Lamerei", "Reversible Angora Cardigan", "$120"),
                             ProductData(R.drawable.product3, "21WN", "Reversible Angora Cardigan", "$120"),
                             ProductData(R.drawable.product4, "Lamerei", "Reversible Angora Cardigan", "$120")
-                        )
+                        ),
+                        contactNumber = "8004482372"
                     ),
                     ImageData(
                         R.drawable.profile_one_male,
@@ -214,11 +221,12 @@ object DataProvider {
                         "Creating engaging content for various platforms, focusing on SEO and audience engagement. Previously provided content writing services for blogs, websites, and marketing campaigns, enhancing online presence.",
                         experience = emptyList(),
                         profileName = "Rohan",
-                        profileLinkedInUrl = "https://www.linkedin.com/in/sonal-profile", // Replace with actual URL
-                        profileYouTubeUrl = "https://www.youtube.com/user/sonalchannel", // Replace with actual URL
-                        profileFacebookUrl = "https://www.facebook.com/sonal.profile", // Replace with actual URL
-                        profileXUrl = "https://twitter.com/sonal_profile", // Replace with actual URL
-                        profileInstagramUrl = "https://www.instagram.com/sonal.profile/" // Replace with actual URL
+                        profileLinkedInUrl = "https://www.linkedin.com/in/sonal-profile",
+                        profileYouTubeUrl = "https://www.youtube.com/user/sonalchannel",
+                        profileFacebookUrl = "https://www.facebook.com/sonal.profile",
+                        profileXUrl = "https://twitter.com/sonal_profile",
+                        profileInstagramUrl = "https://www.instagram.com/sonal.profile/",
+                        contactNumber = "8004482372"
                     )
                 )
             ),
@@ -251,7 +259,8 @@ object DataProvider {
                                 "Delhi, India",
                                 "Collaborated on university projects, creating visual content and promotional materials."
                             )
-                        )
+                        ),
+                        contactNumber = "8004482372"
                     ),
                     ImageData(
                         R.drawable.profile_one_female,
@@ -261,7 +270,8 @@ object DataProvider {
                         "Los Angeles",
                         "Graphic Designer specializing in branding and marketing materials.",
                         "Designing branding and marketing materials for various clients, enhancing brand identity. Previously worked as a freelance designer, focusing on logo and website design.",
-                        experience = emptyList()
+                        experience = emptyList(),
+                        contactNumber = "9064801614"
                     ),
                     ImageData(
                         R.drawable.profoile_two_female,
@@ -290,7 +300,8 @@ object DataProvider {
                                 "Delhi, India",
                                 "Collaborated on university projects, creating visual content and promotional materials."
                             )
-                        )
+                        ),
+                        contactNumber = "9897027801"
                     ),
                     ImageData(
                         R.drawable.profile_mix,
@@ -305,7 +316,8 @@ object DataProvider {
                             ProductData(R.drawable.product2, "Lamerei", "Reversible Angora Cardigan", "$120"),
                             ProductData(R.drawable.product3, "21WN", "Reversible Angora Cardigan", "$120"),
                             ProductData(R.drawable.product4, "Lamerei", "Reversible Angora Cardigan", "$120")
-                        )
+                        ),
+                        contactNumber = "8004482372"
                     ),
                     ImageData(R.drawable.profile_female, "Hobbies: Painting, Music", "", "", "", "", "", emptyList())
                 )
@@ -339,7 +351,8 @@ object DataProvider {
                                 "Remote",
                                 "Assisted startups in developing their marketing strategies, focusing on digital marketing and content creation."
                             )
-                        )
+                        ),
+                        contactNumber = "8004482372"
                     ),
                     ImageData(
                         R.drawable.profile_two_male,
@@ -349,7 +362,8 @@ object DataProvider {
                         "Chicago",
                         "Marketing Specialist with experience in leading campaigns and strategies.",
                         "Leading campaigns and strategies for major clients, increasing brand visibility and market share. Previously worked at AdWorks, developing advertising campaigns and managing client relations.",
-                        experience = emptyList()
+                        experience = emptyList(),
+                        contactNumber = "9064801614"
                     ),
                     ImageData(
                         R.drawable.profile_one_male,
@@ -378,7 +392,8 @@ object DataProvider {
                                 "Remote",
                                 "Assisted startups in developing their marketing strategies, focusing on digital marketing and content creation."
                             )
-                        )
+                        ),
+                        contactNumber = "9897027801"
                     ),
                     ImageData(
                         R.drawable.profile_mix,
@@ -393,7 +408,8 @@ object DataProvider {
                             ProductData(R.drawable.product2, "Lamerei", "Reversible Angora Cardigan", "$120"),
                             ProductData(R.drawable.product3, "21WN", "Reversible Angora Cardigan", "$120"),
                             ProductData(R.drawable.product4, "Lamerei", "Reversible Angora Cardigan", "$120")
-                        )
+                        ),
+                        contactNumber = "8004482372"
                     ),
                     ImageData(R.drawable.profoile_two_female, "Hobbies: Blogging, Photography", "", "", "", "", "", emptyList())
                 )
@@ -427,7 +443,8 @@ object DataProvider {
                                 "Delhi, India",
                                 "Contributed articles and short stories, and participated in organizing literary events."
                             )
-                        )
+                        ),
+                        contactNumber = "8004482372"
                     ),
                     ImageData(
                         R.drawable.profile_mix,
@@ -437,7 +454,8 @@ object DataProvider {
                         "Boston",
                         "Content Writer with experience in creating engaging content for various platforms.",
                         "Creating engaging content for various platforms, focusing on SEO and audience engagement. Previously provided content writing services for blogs, websites, and marketing campaigns, enhancing online presence.",
-                        experience = emptyList()
+                        experience = emptyList(),
+                        contactNumber = "9064801614"
                     ),
                     ImageData(
                         R.drawable.profoile_two_female,
@@ -466,7 +484,8 @@ object DataProvider {
                                 "Delhi, India",
                                 "Contributed articles and short stories, and participated in organizing literary events."
                             )
-                        )
+                        ),
+                        contactNumber = "9897027801"
                     ),
                     ImageData(
                         R.drawable.profile_mix,
@@ -481,7 +500,8 @@ object DataProvider {
                             ProductData(R.drawable.product2, "Lamerei", "Reversible Angora Cardigan", "$120"),
                             ProductData(R.drawable.product3, "21WN", "Reversible Angora Cardigan", "$120"),
                             ProductData(R.drawable.product4, "Lamerei", "Reversible Angora Cardigan", "$120")
-                        )
+                        ),
+                        contactNumber = "8004482372"
                     ),
                     ImageData(R.drawable.profile_one_female, "Hobbies: Writing, Reading", "", "", "", "", "", emptyList())
                 )

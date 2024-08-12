@@ -3,6 +3,7 @@ package com.example.hushh_connect_vone
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -12,13 +13,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -38,24 +37,35 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.hushh_connect_vone.Viewmodel.CardViewModel
 import com.example.hushh_connect_vone.data.CardData
 import com.example.hushh_connect_vone.data.DataProvider
+import com.example.hushh_connect_vone.data.UserLiked
+import com.example.hushh_connect_vone.data.UserLikedManager
 import com.example.hushh_connect_vone.ui.theme.Hushh_connect_voneTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
+    private val cardViewModel: CardViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
             Hushh_connect_voneTheme {
                 val systemUiController = rememberSystemUiController()
                 SideEffect {
@@ -66,35 +76,54 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val currentCardIndex = remember { mutableStateOf(0) }
-                    val screenWidthPx = with(LocalDensity.current) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
-
                     Box(modifier = Modifier.fillMaxSize()) {
-                        // TopBar Composable ko Box ke sabse upar add karein
-                        TopBar()
-
-                        StackOfCards(
-                            currentCardIndex = currentCardIndex,
-                            cards = DataProvider.getCards(),
-                            modifier = Modifier.padding(top = 48.dp)
-                        )
-
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Bottom
-                        ) {
-                            ActionNavigationBar(
-                                currentCardIndex = currentCardIndex,
-                                cardCount = DataProvider.getCards().size, // Number of cards in the stack
-                                screenWidthPx = screenWidthPx
-                            )
-                            BottomNavigationBar2()
-                        }
+                        MyAppNavHost(navController = navController, cardViewModel = cardViewModel)
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun MyAppNavHost(navController: NavHostController, cardViewModel: CardViewModel, modifier: Modifier = Modifier) {
+    NavHost(navController = navController, startDestination = "mainScreen", modifier = modifier) {
+        composable("mainScreen") { MainScreen(navController, cardViewModel) }
+        composable("likedUsersScreen") { LikedUsersScreen(navController, cardViewModel) }
+    }
+}
+
+@Composable
+fun MainScreen(navController: NavController, cardViewModel: CardViewModel) {
+    val currentCardIndex by cardViewModel.currentCardIndex.collectAsState()
+    val screenWidthPx = with(LocalDensity.current) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        TopBar()
+
+        StackOfCards(
+            currentCardIndex = cardViewModel.currentCardIndex.collectAsState().value,
+            cards = DataProvider.getCards(),
+            modifier = Modifier.padding(top = 48.dp),
+            onCardSwiped = { index ->
+                cardViewModel.updateCardIndex(index)
+            }
+        )
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            ActionNavigationBar(
+                currentCardIndex = cardViewModel.currentCardIndex.collectAsState().value,
+                cardCount = DataProvider.getCards().size,
+                screenWidthPx = screenWidthPx,
+                imageIndices = remember { mutableStateListOf(*Array(DataProvider.getCards().size) { 0 }) },
+                onCardSwiped = { index -> cardViewModel.updateCardIndex(index) }
+            )
+            BottomNavigationBar2(navController = navController, selectedIndex = 0)
         }
     }
 }
@@ -112,7 +141,6 @@ fun TopBar() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Profile Image
             Image(
                 painter = painterResource(id = R.drawable.avatar_topbar),
                 contentDescription = "Profile",
@@ -122,7 +150,6 @@ fun TopBar() {
                     .background(Color.White)
             )
 
-            // App Title with Logo
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
                     painter = painterResource(id = R.drawable.topbarbeforeconnecticon),
@@ -137,21 +164,121 @@ fun TopBar() {
                 )
             }
 
-            // Search and Notification Icons
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(id = R.drawable.search_topbar),
                     contentDescription = "Search",
                     tint = Color.White,
                     modifier = Modifier
-                        .size(32.dp) // Set size to 24.dp to match notification icon
+                        .size(32.dp)
                         .padding(end = 8.dp)
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.notify_topbar),
                     contentDescription = "Notifications",
                     tint = Color.White,
-                    modifier = Modifier.size(24.dp) // Set size to 24.dp
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun LikedUsersScreen(navController: NavController, cardViewModel: CardViewModel) {
+    LikedUsersContent(navController)
+}
+
+@Composable
+fun LikedUsersContent(navController: NavController) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.discoverpage_imagefour_bg),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            Column(modifier = Modifier.fillMaxSize()) {
+                TopBar()
+                LikedUsersList(UserLikedManager.getLikedUsers())
+            }
+            BottomNavigationBar2(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                navController = navController,
+                selectedIndex = 3
+            )
+        }
+    }
+}
+
+@Composable
+fun LikedUsersList(likedUsers: List<UserLiked>) {
+    LazyColumn(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        items(likedUsers) { user ->
+            LikedUserItem(user = user)
+        }
+    }
+}
+
+@Composable
+fun LikedUserItem(user: UserLiked) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = user.imageRes),
+            contentDescription = null,
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = user.name,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Dummy message...",
+                color = Color.White.copy(alpha = 0.7f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(
+            horizontalAlignment = Alignment.End
+        ) {
+            Text(
+                text = "14:33",
+                color = Color.White.copy(alpha = 0.7f),
+                fontSize = 12.sp
+            )
+            Box(
+                modifier = Modifier
+                    .size(20.dp)
+                    .background(Color.Red, shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "1",
+                    color = Color.White,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -161,8 +288,9 @@ fun TopBar() {
 @Composable
 fun StackOfCards(
     modifier: Modifier = Modifier,
-    currentCardIndex: MutableState<Int>,
-    cards: List<CardData>
+    currentCardIndex: Int,
+    cards: List<CardData>,
+    onCardSwiped: (Int) -> Unit
 ) {
     val imageIndices = remember { mutableStateListOf(*Array(cards.size) { 0 }) }
     val gradientColors = listOf(Color(0xFF1b2c48), Color(0xFF563c69))
@@ -178,9 +306,8 @@ fun StackOfCards(
                 )
             )
     ) {
-        if (currentCardIndex.value < cards.size) {
-            // Show cards
-            if (currentCardIndex.value < cards.size - 1) {
+        if (currentCardIndex < cards.size) {
+            if (currentCardIndex < cards.size - 1) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -193,7 +320,7 @@ fun StackOfCards(
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Image(
-                                painter = painterResource(id = cards[currentCardIndex.value + 1].images[0].imageRes),
+                                painter = painterResource(id = cards[currentCardIndex + 1].images[0].imageRes),
                                 contentDescription = null,
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop
@@ -204,12 +331,13 @@ fun StackOfCards(
             }
 
             cards.forEachIndexed { index, cardData ->
-                if (index == currentCardIndex.value) {
+                if (index == currentCardIndex) {
                     DraggableCard(
                         cardData = cardData,
-                        currentCardIndex = currentCardIndex,
+                        currentCardIndex = remember { mutableStateOf(currentCardIndex) },
                         cardCount = cards.size,
-                        imageIndices = imageIndices
+                        imageIndices = imageIndices,
+                        onCardSwiped = onCardSwiped
                     )
                 }
             }
@@ -217,13 +345,13 @@ fun StackOfCards(
     }
 }
 
-
 @Composable
 fun DraggableCard(
     cardData: CardData,
     currentCardIndex: MutableState<Int>,
     cardCount: Int,
-    imageIndices: SnapshotStateList<Int>
+    imageIndices: SnapshotStateList<Int>,
+    onCardSwiped: (Int) -> Unit
 ) {
     val imagesList = cardData.images
     val numberOfImages = imagesList.size
@@ -274,7 +402,24 @@ fun DraggableCard(
                         onDragEnd = {
                             coroutineScope.launch {
                                 if (offsetX.value > 300f || offsetX.value < -300f) {
+                                    if (offsetX.value > 300f) {
+                                        val currentImageData = imagesList[imageIndices[currentCardIndex.value]]
+                                        UserLikedManager.addLikedUser(
+                                            UserLiked(
+                                                imageRes = currentImageData.imageRes,
+                                                name = currentImageData.name,
+                                                role = currentImageData.role,
+                                                companyName = currentImageData.companyName,
+                                                location = currentImageData.location,
+                                                description = currentImageData.description,
+                                                profileName = currentImageData.profileName,
+                                                contactNumber = currentImageData.contactNumber
+                                            )
+                                        )
+                                    }
+
                                     currentCardIndex.value++
+                                    onCardSwiped(currentCardIndex.value)
                                     offsetX.snapTo(0f)
                                     rotation = 0f
                                     alpha = 1f
@@ -312,7 +457,6 @@ fun DraggableCard(
 
                 if (isFifthImage) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        // Background image
                         Image(
                             painter = painterResource(id = currentImageData.imageRes),
                             contentDescription = null,
@@ -320,22 +464,19 @@ fun DraggableCard(
                             contentScale = ContentScale.Crop
                         )
 
-                        // Dark overlay
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(Color(0x88000000)) // Semi-transparent black overlay
+                                .background(Color(0x88000000))
                         )
 
-                        // Text and Social Media Icons
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .align(Alignment.Center) // Aligns the column to the center of the card
+                                .align(Alignment.Center)
                                 .padding(bottom = 20.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            // "Connect with" text in white
                             Text(
                                 text = "Connect with",
                                 style = TextStyle(
@@ -349,11 +490,10 @@ fun DraggableCard(
                                 )
                             )
 
-                            // Name with simulated gradient color using a combination of colors
                             Text(
                                 text = currentImageData.name + "!",
                                 style = TextStyle(
-                                    fontSize = 42.sp, // Increased font size for name
+                                    fontSize = 42.sp,
                                     lineHeight = 44.sp,
                                     fontFamily = FontFamily(Font(R.font.pacifico)),
                                     fontWeight = FontWeight(400),
@@ -367,54 +507,49 @@ fun DraggableCard(
 
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            // Social Media Icons
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.linkedin_social), // Replace with your icon resource ID
+                                    painter = painterResource(id = R.drawable.linkedin_social),
                                     contentDescription = "LinkedIn",
                                     tint = Color.White,
                                     modifier = Modifier.size(40.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
-                                    painter = painterResource(id = R.drawable.yt_social), // Replace with your icon resource ID
+                                    painter = painterResource(id = R.drawable.yt_social),
                                     contentDescription = "YouTube",
                                     tint = Color.White,
                                     modifier = Modifier.size(40.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
-                                    painter = painterResource(id = R.drawable.fb_social), // Replace with your icon resource ID
+                                    painter = painterResource(id = R.drawable.fb_social),
                                     contentDescription = "Facebook",
                                     tint = Color.White,
                                     modifier = Modifier.size(40.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
-                                    painter = painterResource(id = R.drawable.x_social), // Replace with your icon resource ID
+                                    painter = painterResource(id = R.drawable.x_social),
                                     contentDescription = "Twitter",
                                     tint = Color.White,
                                     modifier = Modifier.size(40.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
-                                    painter = painterResource(id = R.drawable.insta_social), // Replace with your icon resource ID
+                                    painter = painterResource(id = R.drawable.insta_social),
                                     contentDescription = "Instagram",
                                     tint = Color.White,
                                     modifier = Modifier.size(40.dp)
                                 )
                             }
                         }
-
                     }
                 }
 
-
-
-                // Blackish overlay to darken the bottom 50% of the image
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -433,7 +568,6 @@ fun DraggableCard(
                         .padding(16.dp)
                 ) {
                     if (imageIndices[currentCardIndex.value] == 3) {
-                        // Product grid for Clara Jane
                         Text(
                             text = currentImageData.name,
                             style = TextStyle(
@@ -459,7 +593,6 @@ fun DraggableCard(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Product Grid
                         val products = currentImageData.products
                         Column {
                             products.chunked(2).forEach { row ->
@@ -515,12 +648,9 @@ fun DraggableCard(
                                 }
                             }
                         }
-
                     } else {
-                        // Default display for other images
                         when (imageIndices[currentCardIndex.value]) {
                             0 -> {
-                                // First image content
                                 Text(
                                     text = currentImageData.name,
                                     style = TextStyle(
@@ -532,7 +662,7 @@ fun DraggableCard(
                                         letterSpacing = 0.1.sp
                                     )
                                 )
-                                Spacer(modifier = Modifier.height(4.dp)) // 4 dp ka gap
+                                Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "${currentImageData.role} @ ${currentImageData.companyName}",
                                     style = TextStyle(
@@ -544,7 +674,7 @@ fun DraggableCard(
                                         letterSpacing = 0.1.sp
                                     )
                                 )
-                                Spacer(modifier = Modifier.height(2.dp)) // 4 dp ka gap
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = currentImageData.location,
                                     style = TextStyle(
@@ -555,7 +685,7 @@ fun DraggableCard(
                                         letterSpacing = 0.1.sp
                                     )
                                 )
-                                Spacer(modifier = Modifier.height(2.dp)) // 4 dp ka gap
+                                Spacer(modifier = Modifier.height(2.dp))
 
                                 Text(
                                     text = currentImageData.description,
@@ -574,7 +704,7 @@ fun DraggableCard(
                                         fontSize = 14.sp,
                                         fontFamily = FontFamily(Font(R.font.figtree)),
                                         fontWeight = FontWeight(400),
-                                        color = Color(0xFF007AFF), // Blue color for "Read more"
+                                        color = Color(0xFF007AFF),
                                         letterSpacing = 0.1.sp
                                     ),
                                     modifier = Modifier.clickable {
@@ -583,10 +713,8 @@ fun DraggableCard(
                                         }
                                     }
                                 )
-
                             }
                             1 -> {
-                                // Second image content
                                 Text(
                                     text = currentImageData.name,
                                     style = TextStyle(
@@ -632,7 +760,6 @@ fun DraggableCard(
                                 )
                             }
                             2 -> {
-                                // Third image content with experience
                                 Text(
                                     text = currentImageData.name,
                                     style = TextStyle(
@@ -667,7 +794,6 @@ fun DraggableCard(
                                     )
                                 )
 
-                                // Displaying experience in a row
                                 currentImageData.experience.forEach { experience ->
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically
@@ -678,18 +804,18 @@ fun DraggableCard(
                                                 fontSize = 14.sp,
                                                 fontFamily = FontFamily(Font(R.font.figtree)),
                                                 fontWeight = FontWeight(600),
-                                                color = Color(0xFFC1FF17), // Yellowish color for experience duration
+                                                color = Color(0xFFC1FF17),
                                                 letterSpacing = 0.1.sp
                                             )
                                         )
-                                        Spacer(modifier = Modifier.width(4.dp)) // Space between duration and company
+                                        Spacer(modifier = Modifier.width(4.dp))
                                         Text(
                                             text = experience.company,
                                             style = TextStyle(
                                                 fontSize = 14.sp,
                                                 fontFamily = FontFamily(Font(R.font.figtree)),
                                                 fontWeight = FontWeight(600),
-                                                color = Color(0xFF00FF00), // Green color for experience company
+                                                color = Color(0xFF00FF00),
                                                 letterSpacing = 0.1.sp
                                             )
                                         )
@@ -705,11 +831,10 @@ fun DraggableCard(
                                             letterSpacing = 0.1.sp
                                         )
                                     )
-                                    Spacer(modifier = Modifier.height(8.dp)) // Space between experiences
+                                    Spacer(modifier = Modifier.height(8.dp))
                                 }
                             }
                             else -> {
-                                // For other images, you can customize the content as needed
                                 Text(
                                     text = " ",
                                     color = Color.White,
@@ -720,7 +845,6 @@ fun DraggableCard(
                     }
                 }
 
-                // Like and Nope stickers
                 if (offsetX.value > 0) {
                     Image(
                         painter = painterResource(id = R.drawable.likehushhconnect),
@@ -771,20 +895,14 @@ fun DraggableCard(
 }
 
 
-
-
-
-
-
-
-
-
 @Composable
 fun ActionNavigationBar(
     modifier: Modifier = Modifier,
-    currentCardIndex: MutableState<Int>,
+    currentCardIndex: Int,
     cardCount: Int,
-    screenWidthPx: Float
+    screenWidthPx: Float,
+    imageIndices: SnapshotStateList<Int>,
+    onCardSwiped: (Int) -> Unit
 ) {
     val items = listOf(
         R.drawable.actionbar_discover,
@@ -807,7 +925,7 @@ fun ActionNavigationBar(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
-        if (!showImage) { // This condition hides the ActionNavigationBar when showImage is true
+        if (!showImage) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround,
@@ -833,36 +951,48 @@ fun ActionNavigationBar(
                                 selectedIndex = index
                                 coroutineScope.launch {
                                     showImage = true
-                                    delay(500L) // Increased delay to 1 second
+                                    delay(500L)
                                     when (index) {
                                         1 -> {
-                                            // Swipe left action
-                                            if (currentCardIndex.value < cardCount) {
+                                            if (currentCardIndex < cardCount) {
                                                 offsetX.animateTo(
                                                     targetValue = -screenWidthPx,
                                                     animationSpec = tween(
-                                                        durationMillis = 200, // Reduced duration for faster swipe
+                                                        durationMillis = 200,
                                                         easing = LinearOutSlowInEasing
                                                     )
                                                 )
-                                                currentCardIndex.value++
+                                                onCardSwiped(currentCardIndex + 1)
                                             }
                                         }
                                         3 -> {
-                                            // Swipe right action
-                                            if (currentCardIndex.value < cardCount) {
+                                            if (currentCardIndex < cardCount) {
+                                                val currentImageData = DataProvider.getCards()[currentCardIndex].images[imageIndices[currentCardIndex]]
+                                                UserLikedManager.addLikedUser(
+                                                    UserLiked(
+                                                        imageRes = currentImageData.imageRes,
+                                                        name = currentImageData.name,
+                                                        role = currentImageData.role,
+                                                        companyName = currentImageData.companyName,
+                                                        location = currentImageData.location,
+                                                        description = currentImageData.description,
+                                                        profileName = currentImageData.profileName,
+                                                        contactNumber = currentImageData.contactNumber
+                                                    )
+                                                )
+
                                                 offsetX.animateTo(
                                                     targetValue = screenWidthPx,
                                                     animationSpec = tween(
-                                                        durationMillis = 200, // Reduced duration for faster swipe
+                                                        durationMillis = 200,
                                                         easing = LinearOutSlowInEasing
                                                     )
                                                 )
-                                                currentCardIndex.value++
+                                                onCardSwiped(currentCardIndex + 1)
                                             }
                                         }
                                     }
-                                    showImage = false // Moved after the animation
+                                    showImage = false
                                 }
                             }
                             .padding(8.dp)
@@ -895,17 +1025,16 @@ fun ActionNavigationBar(
                     painter = painterResource(id = if (selectedIndex == 1) R.drawable.nopehushhconnect else R.drawable.likehushhconnect),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(150.dp) // Adjust size as needed
-                        .alpha(0.8f) // Adjust transparency as needed
+                        .size(150.dp)
+                        .alpha(0.8f)
                 )
             }
         }
     }
 }
-
 @Composable
-fun BottomNavigationBar2(modifier: Modifier = Modifier) {
-    var selectedIndex by remember { mutableStateOf(0) }
+fun BottomNavigationBar2(modifier: Modifier = Modifier, navController: NavController, selectedIndex: Int) {
+    var currentIndex by remember { mutableStateOf(selectedIndex) }
     val unselectedColor = Color.Gray
     val selectedGradientBrush = Brush.linearGradient(
         colors = listOf(Color(0xFFE54D60), Color(0xFFA342FF))
@@ -931,10 +1060,16 @@ fun BottomNavigationBar2(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .size(48.dp)
                     .padding(4.dp)
-                    .clickable { selectedIndex = index },
+                    .clickable {
+                        currentIndex = index
+                        when (index) {
+                            0 -> navController.navigate("mainScreen") // Navigate to Main Screen
+                            3 -> navController.navigate("likedUsersScreen") // Navigate to LikedUsersScreen
+                        }
+                    },
                 contentAlignment = Alignment.Center
             ) {
-                val selected = index == selectedIndex
+                val selected = index == currentIndex
 
                 Image(
                     painter = painterResource(id = icon),
@@ -968,20 +1103,29 @@ fun StackOfCardsPreview() {
         val screenWidthPx = with(LocalDensity.current) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
         Box(modifier = Modifier.fillMaxSize()) {
             StackOfCards(
-                currentCardIndex = currentCardIndex,
+                currentCardIndex = currentCardIndex.value,
                 cards = DataProvider.getCards(),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                onCardSwiped = { newIndex ->
+                    currentCardIndex.value = newIndex
+                    // Optionally, if you want to do something else when the card is swiped
+                }
             )
             Column(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 verticalArrangement = Arrangement.Bottom
             ) {
                 ActionNavigationBar(
-                    currentCardIndex = currentCardIndex,
+                    currentCardIndex = currentCardIndex.value,
                     cardCount = DataProvider.getCards().size,
-                    screenWidthPx = screenWidthPx
+                    screenWidthPx = screenWidthPx,
+                    imageIndices = remember { mutableStateListOf(*Array(DataProvider.getCards().size) { 0 }) },
+                    onCardSwiped = { newIndex ->
+                        currentCardIndex.value = newIndex
+                    }
                 )
-                BottomNavigationBar2()
+
+                BottomNavigationBar2(navController = rememberNavController(), selectedIndex = 0)
             }
         }
     }
