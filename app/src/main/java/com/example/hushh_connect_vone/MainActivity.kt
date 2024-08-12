@@ -1,6 +1,11 @@
 package com.example.hushh_connect_vone
 
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -30,6 +35,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -231,11 +237,20 @@ fun LikedUsersList(likedUsers: List<UserLiked>) {
 }
 
 @Composable
-fun LikedUserItem(user: UserLiked) {
+fun LikedUserItem(user: UserLiked, context: Context = LocalContext.current) {
+    val redHatTextFont = FontFamily(Font(R.font.red_hat_text))
+    val figtreeFont = FontFamily(Font(R.font.figtree_regular))
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .clickable {
+                // Use the openWhatsApp function with a +91 prefix and a custom message
+                val phoneNumber = "+91${user.contactNumber.replace(" ", "").replace("-", "")}"
+                val message = "Hi ${user.name}, I found your profile on Hushh Connect."
+                openWhatsApp(context, phoneNumber, message)
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -249,11 +264,16 @@ fun LikedUserItem(user: UserLiked) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = user.name,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
+                fontFamily = figtreeFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = Color.White
             )
+            Spacer(modifier = Modifier.height(4.dp))  // Adding 4dp margin between the texts
             Text(
-                text = "Dummy message...",
+                text = "Working at ${user.companyName}",
+                fontFamily = redHatTextFont,
+                fontSize = 14.sp,
                 color = Color.White.copy(alpha = 0.7f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -268,15 +288,16 @@ fun LikedUserItem(user: UserLiked) {
                 color = Color.White.copy(alpha = 0.7f),
                 fontSize = 12.sp
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Box(
                 modifier = Modifier
                     .size(20.dp)
-                    .background(Color.Red, shape = CircleShape),
+                    .background(Color.White, shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "1",
-                    color = Color.White,
+                    color = Color.Black,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -284,6 +305,20 @@ fun LikedUserItem(user: UserLiked) {
         }
     }
 }
+
+private fun openWhatsApp(context: Context, phoneNumber: String, message: String) {
+    val intent = Intent(Intent.ACTION_VIEW)
+    val url = "https://wa.me/$phoneNumber/?text=${Uri.encode(message)}"
+    intent.data = Uri.parse(url)
+
+    try {
+        context.startActivity(intent)
+    } catch (e: ActivityNotFoundException) {
+        Toast.makeText(context, "WhatsApp not installed on your device", Toast.LENGTH_SHORT).show()
+    }
+}
+
+
 
 @Composable
 fun StackOfCards(
